@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato — Newmed Equipamentos Hospitalares</title>
+<meta name="description" content="Fale com a Newmed: telefone, WhatsApp, e-mail e localização. Solicite orçamento de venda, locação ou manutenção de equipamentos.">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-bar">
+    <a href="index.html" class="brand">
+      <img src="img/logo-newmed.png" alt="Newmed Equipamentos Hospitalares" class="brand-logo">
+    </a>
+
+    <nav class="main-nav">
+      <a href="index.html">Início</a>
+      <a href="sobre.html">Quem Somos</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="servicos.html">Serviços</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="header-search-toggle" aria-label="Buscar produtos" aria-expanded="false"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="tel:+558131282222" class="header-phone"><i class="fa-solid fa-phone"></i> (81) 3128-2222</a>
+      <a href="#" class="btn btn-whatsapp btn-sm" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento."><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+      <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+  <form class="header-search-panel" id="header-search-form">
+    <div class="header-search-panel-inner">
+      <input type="text" name="q" placeholder="Buscar produtos (ex: balança, ECG, monitor...)" aria-label="Buscar produtos">
+      <button type="submit" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </form>
+</header>
+
+<section class="page-banner">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Início</a> / <span>Contato</span></div>
+    <span class="eyebrow">Fale com a gente</span>
+    <h1>Vamos conversar sobre o seu equipamento</h1>
+    <p>Orçamento de venda, locação ou manutenção — responda algumas perguntas rápidas e nosso time entra em contato.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-grid">
+
+    <div class="contact-info-card" data-reveal>
+      <h3>Informações de contato</h3>
+      <p style="color:rgba(255,255,255,.7);">Prefere falar direto? Escolha o canal mais fácil pra você.</p>
+      <ul class="contact-info-list">
+        <li>
+          <i class="fa-solid fa-phone"></i>
+          <div>
+            <strong>Telefone</strong>
+            <a href="tel:+558131282222">(81) 3128-2222</a>
+          </div>
+        </li>
+        <li>
+          <i class="fa-brands fa-whatsapp"></i>
+          <div>
+            <strong>WhatsApp</strong>
+            <a href="#" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." data-wa-label>(81) 99999-9999</a>
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-envelope"></i>
+          <div>
+            <strong>E-mail</strong>
+            <a href="mailto:comercial@newmedequipamentos.com.br">comercial@newmedequipamentos.com.br</a>
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-location-dot"></i>
+          <div>
+            <strong>Endereço</strong>
+            <span>Rua Doutor Manoel de Almeida Belo, 700 — Bairro Novo, Olinda - PE, CEP 53030-030</span>
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-clock"></i>
+          <div>
+            <strong>Horário de atendimento</strong>
+            <span>08h às 17h</span>
+          </div>
+        </li>
+      </ul>
+      <strong style="display:block; font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:rgba(255,255,255,.55); margin-bottom:10px;">Redes sociais</strong>
+      <div class="social-row">
+        <a href="https://www.instagram.com/newmedas2/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+
+    <div class="contact-form-card" data-reveal>
+      <h3>Solicitar orçamento</h3>
+      <p>Preencha o formulário abaixo — vamos abrir um e-mail já preenchido para o nosso time comercial.</p>
+      <form id="contact-form">
+        <div class="form-row">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" required placeholder="Seu nome completo">
+          </div>
+          <div class="field">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required placeholder="voce@email.com">
+        </div>
+        <div class="field">
+          <label for="categoria">Categoria de interesse</label>
+          <select id="categoria" name="categoria">
+            <option value="Diagnóstico e Monitoramento">Diagnóstico e Monitoramento</option>
+            <option value="Emergência e Cardiologia">Emergência e Cardiologia</option>
+            <option value="Terapia Respiratória">Terapia Respiratória</option>
+            <option value="Acessórios e Consumíveis">Acessórios e Consumíveis</option>
+            <option value="Mobiliário Hospitalar">Mobiliário Hospitalar</option>
+            <option value="Locação de Equipamentos">Locação de Equipamentos</option>
+            <option value="Manutenção / Departamento Técnico">Manutenção / Departamento Técnico</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" name="mensagem" required placeholder="Conte o que você precisa: equipamento, quantidade, prazo..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Enviar mensagem</button>
+        <p class="form-note">Ao enviar, seu app de e-mail vai abrir com a mensagem pronta para comercial@newmedequipamentos.com.br. Prefere WhatsApp? <a href="#" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." style="color:var(--teal-600); font-weight:700;">Clique aqui</a>.</p>
+      </form>
+    </div>
+
+  </div>
+
+  <div class="container">
+    <div class="map-frame" data-reveal>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d427.46423732103716!2d-34.84142895443108!3d-8.001349795456601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab3d49c2eca7df%3A0x63f6e7bdfd2d13a0!2sNewmed%20Com%C3%A9rcio%20Servi%C3%A7os%20e%20loca%C3%A7%C3%A3o%20de%20Equipamentos%20M%C3%A9dicos%20e%20Hospitalares!5e0!3m2!1spt-BR!2sbr!4v1649671191370!5m2!1spt-BR!2sbr"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Localização da Newmed no Google Maps">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="img/logo-newmed.png" alt="Newmed Equipamentos Hospitalares" class="brand-logo">
+        </a>
+        <p data-years-since="2009">Há 17 anos vendendo, alugando e dando manutenção em equipamentos médicos e hospitalares em todo o Brasil.</p>
+        <div class="social-row">
+          <a href="https://www.instagram.com/newmedas2/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" data-wa data-wa-msg="Olá! Gostaria de mais informações." aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="sobre.html">Quem Somos</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="servicos.html">Serviços</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Serviços</h4>
+        <ul>
+          <li><a href="servicos.html#tecnico">Departamento Técnico</a></li>
+          <li><a href="servicos.html#locacao">Locação de Equipamentos</a></li>
+          <li><a href="produtos.html">Catálogo de Produtos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-contact">
+        <h4>Contato</h4>
+        <ul>
+          <li><i class="fa-solid fa-phone"></i> <span>(81) 3128-2222</span></li>
+          <li><i class="fa-solid fa-envelope"></i> <span>comercial@newmedequipamentos.com.br</span></li>
+          <li><i class="fa-solid fa-location-dot"></i> <span>Rua Doutor Manoel de Almeida Belo, 700 — Bairro Novo, Olinda - PE, CEP 53030-030</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Newmed Equipamentos Hospitalares. Todos os direitos reservados.</span>
+      <a href="privacidade.html" style="color:rgba(255,255,255,.5); font-size:.82rem;">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<a href="#" class="wa-float" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." aria-label="Falar no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+
+<script src="js/script.js"></script>
+</body>
+</html>
