@@ -186,11 +186,13 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   position: relative;
   overflow: hidden;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   background: linear-gradient(155deg, var(--navy-950), var(--navy-900) 55%, var(--blue-600));
   color: var(--white);
 }
 .hero-grid {
   grid-area: 1 / 1;
+  min-width: 0;
   align-self: center;
   position: relative;
   z-index: 1;
@@ -215,7 +217,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 .hero-stats div strong { display: block; font-family: var(--font-heading); font-size: 1.7rem; color: var(--white); }
 .hero-stats div span { font-size: .82rem; color: rgba(255,255,255,.65); }
 
-.hero-bg-photo { grid-area: 1 / 1; position: relative; aspect-ratio: 1280 / 1028; z-index: 0; }
+.hero-bg-photo { grid-area: 1 / 1; align-self: start; width: 100%; min-width: 0; position: relative; aspect-ratio: 1280 / 1028; z-index: 0; }
 .hero-bg-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hero-bg-photo::after {
   content: "";
@@ -694,7 +696,24 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 @media (max-width: 960px) {
   .main-nav, .header-phone { display: none; }
   .nav-toggle { display: flex; }
-  .hero-grid { grid-template-columns: 1fr; }
+
+  /* Hero: abandon the desktop stacking layout for a simple, reliable
+     stacked mobile layout — contained photo card, then text, then wave. */
+  .hero { display: block; }
+  .hero-bg-photo {
+    position: relative;
+    width: calc(100% - 48px);
+    max-width: 380px;
+    height: 220px;
+    margin: 24px auto 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255,255,255,.12);
+  }
+  .hero-bg-photo::after { display: none; }
+  .hero-grid { grid-template-columns: 1fr; padding: 32px 0 40px; }
+
   .about-hero { grid-template-columns: 1fr; }
   .about-photo { height: 320px; }
   .stat-row--4col { grid-template-columns: repeat(2, 1fr); }
