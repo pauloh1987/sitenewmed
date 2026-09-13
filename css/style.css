@@ -697,22 +697,28 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   .main-nav, .header-phone { display: none; }
   .nav-toggle { display: flex; }
 
-  /* Hero: abandon the desktop stacking layout for a simple, reliable
-     stacked mobile layout — contained photo card, then text, then wave. */
-  .hero { display: block; }
-  .hero-bg-photo {
-    position: relative;
-    width: calc(100% - 48px);
-    max-width: 380px;
-    height: 220px;
-    margin: 24px auto 0;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255,255,255,.12);
+  .header-bar { padding: 14px 16px; gap: 10px; }
+  .brand-logo { height: 34px; }
+  .header-actions { gap: 8px; }
+  .header-actions .btn-whatsapp.btn-sm {
+    width: 42px; height: 42px;
+    padding: 0;
+    border-radius: 50%;
   }
-  .hero-bg-photo::after { display: none; }
-  .hero-grid { grid-template-columns: 1fr; padding: 32px 0 40px; }
+  .header-actions .btn-whatsapp.btn-sm .btn-label { display: none; }
+
+  /* Hero: keep the same full-bleed photo + overlay concept as desktop,
+     just stacked into a single column with a mobile-tuned crop/gradient. */
+  .hero-grid { grid-template-columns: 1fr; padding: 40px 0 36px; }
+  .hero-copy p { font-size: 1.02rem; }
+  .hero-actions { margin: 24px 0 32px; }
+  .hero-stats { gap: 16px 26px; }
+
+  .hero-bg-photo { aspect-ratio: auto; height: clamp(220px, 62vw, 300px); }
+  .hero-bg-photo img { object-position: center 38%; }
+  .hero-bg-photo::after {
+    background: linear-gradient(180deg, rgba(7,26,48,.78) 0%, rgba(7,26,48,.93) 60%, var(--navy-900) 100%);
+  }
 
   .about-hero { grid-template-columns: 1fr; }
   .about-photo { height: 320px; }
