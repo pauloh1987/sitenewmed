@@ -721,8 +721,11 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   .hero-bg-photo { aspect-ratio: auto; height: clamp(220px, 62vw, 300px); }
   .hero-bg-photo img { object-position: center 38%; }
   .hero-bg-photo::after {
-    background: linear-gradient(180deg, rgba(7,26,48,.78) 0%, rgba(7,26,48,.93) 60%, var(--navy-900) 100%);
+    background: linear-gradient(180deg, rgba(7,26,48,.5) 0%, rgba(7,26,48,.32) 45%, rgba(7,26,48,.65) 85%, var(--navy-900) 100%);
   }
+  /* Overlay is lighter now so the photo stays visible; make up the
+     readability difference with a shadow behind the heading/eyebrow. */
+  .hero .eyebrow, .hero h1 { text-shadow: 0 2px 14px rgba(0,0,0,.55); }
 
   .about-hero { grid-template-columns: 1fr; }
   .about-photo { height: 320px; }
