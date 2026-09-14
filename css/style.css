@@ -522,8 +522,9 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 .contact-info-list { display: flex; flex-direction: column; gap: 22px; margin: 26px 0; }
 .contact-info-list li { display: flex; gap: 16px; align-items: flex-start; }
 .contact-info-list i { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; color: var(--teal-500); flex-shrink: 0; }
+.contact-info-list li > div { min-width: 0; }
 .contact-info-list strong { display: block; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: rgba(255,255,255,.55); margin-bottom: 3px; }
-.contact-info-list span, .contact-info-list a { font-size: .98rem; font-weight: 600; color: var(--white); }
+.contact-info-list span, .contact-info-list a { font-size: .98rem; font-weight: 600; color: var(--white); overflow-wrap: break-word; }
 
 .social-row { display: flex; gap: 10px; margin-top: 8px; }
 .social-row a { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; transition: background .15s ease; }
@@ -734,7 +735,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   .service-block--reverse .service-media,
   .service-block--reverse .equip-grid-card { order: 0; }
   .equip-grid-card { min-height: 0; padding: 20px; }
-  .contact-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: minmax(0, 1fr); }
   .form-row { grid-template-columns: 1fr; }
   .grid-3 { grid-template-columns: 1fr 1fr; }
   .product-detail { grid-template-columns: 1fr; gap: 32px; }
