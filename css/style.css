@@ -709,10 +709,14 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 
   /* Hero: keep the same full-bleed photo + overlay concept as desktop,
      just stacked into a single column with a mobile-tuned crop/gradient. */
-  .hero-grid { grid-template-columns: 1fr; padding: 40px 0 36px; }
+  .hero-grid { grid-template-columns: 1fr; padding: 40px 24px 36px; }
   .hero-copy p { font-size: 1.02rem; }
   .hero-actions { margin: 24px 0 32px; }
-  .hero-stats { gap: 16px 26px; }
+  .hero-stats { gap: 16px 26px; padding-right: 76px; padding-bottom: 28px; }
+
+  /* Shrink the floating WhatsApp bubble on mobile so it stops sitting on
+     top of content near the bottom-right corner (e.g. the hero stats). */
+  .wa-float { width: 50px; height: 50px; right: 16px; bottom: 16px; font-size: 1.3rem; }
 
   .hero-bg-photo { aspect-ratio: auto; height: clamp(220px, 62vw, 300px); }
   .hero-bg-photo img { object-position: center 38%; }
