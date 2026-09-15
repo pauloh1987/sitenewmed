@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadConfig();
   wireConfigFields();
   await wireDynamicProducts();
+  await wireOriginalOverride();
   wireWhatsappLinks();
   wireHeaderScroll();
   wireMobileNav();
@@ -404,6 +405,73 @@ async function wireDynamicProducts() {
       countEl.textContent = `${current + 1} produtos`;
     }
   });
+}
+
+// Aplica edições/ocultações feitas pelo painel admin nos 147 produtos
+// originais (estáticos): esconde o card na grade de produtos.html, ou troca
+// nome/foto/descrição tanto no card quanto na própria página do produto.
+async function wireOriginalOverride() {
+  const prefix = pagePrefix();
+  let edits = {};
+  let hidden = [];
+  try {
+    const [resE, resH] = await Promise.all([
+      fetch(`${prefix}data/produtos-editados.json`, { cache: "no-store" }),
+      fetch(`${prefix}data/produtos-ocultos.json`, { cache: "no-store" }),
+    ]);
+    if (resE.ok) edits = await resE.json();
+    if (resH.ok) hidden = await resH.json();
+  } catch (e) {
+    return;
+  }
+  if (!edits || typeof edits !== "object") edits = {};
+  if (!Array.isArray(hidden)) hidden = [];
+
+  // Grade de produtos.html: um card por produto original, marcado com data-slug.
+  document.querySelectorAll(".product-card[data-slug]").forEach((card) => {
+    const slug = card.getAttribute("data-slug");
+    if (hidden.includes(slug)) {
+      card.style.display = "none";
+      const countEl = card.closest(".cat-block")?.querySelector(".cat-block-count");
+      if (countEl) {
+        const current = parseInt(countEl.textContent, 10) || 0;
+        countEl.textContent = `${Math.max(0, current - 1)} produtos`;
+      }
+      return;
+    }
+    const edit = edits[slug];
+    if (!edit) return;
+    if (edit.nome) {
+      card.setAttribute("data-name", edit.nome);
+      const h4 = card.querySelector(".product-card-body h4");
+      if (h4) h4.textContent = edit.nome;
+      const wa = card.querySelector(".product-card-wa");
+      if (wa) wa.setAttribute("data-wa-msg", `Olá! Gostaria de solicitar um orçamento de: ${edit.nome.toUpperCase()}`);
+    }
+    if (edit.foto) {
+      const img = card.querySelector(".product-card-img img");
+      if (img) img.src = `${prefix}${edit.foto.replace(/^\//, "")}`;
+    }
+  });
+
+  // Página individual do produto (produto/<slug>.html): aplica a edição no
+  // próprio conteúdo se esta for a página editada.
+  const slugAtual = location.pathname.match(/\/produto\/([^/]+)\.html$/)?.[1];
+  const edit = slugAtual && edits[slugAtual];
+  if (edit) {
+    if (edit.nome) {
+      const h1 = document.querySelector(".product-detail-info h1");
+      if (h1) h1.textContent = edit.nome;
+    }
+    if (edit.descricao) {
+      const p = document.querySelector(".product-detail-desc p");
+      if (p) p.textContent = edit.descricao;
+    }
+    if (edit.foto) {
+      const img = document.querySelector(".product-detail-media img");
+      if (img) img.src = `${prefix}${edit.foto.replace(/^\//, "")}`;
+    }
+  }
 }
 
 // Aviso de cookies simples: aparece uma vez, guarda a escolha no navegador.

@@ -213,6 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const FN_URL = "/.netlify/functions/admin";
   let senhaAtual = "";
   let editingId = null;
+  let editingSlug = null;
 
   const loginView = document.getElementById("login-view");
   const appView = document.getElementById("app-view");
@@ -321,39 +322,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  async function fetchProdutosNovos() {
+  async function fetchJson(path, fallback) {
     try {
-      const res = await fetch("../data/produtos-novos.json", { cache: "no-store" });
-      return res.ok ? await res.json() : [];
+      const res = await fetch(path, { cache: "no-store" });
+      return res.ok ? await res.json() : fallback;
     } catch (e) {
-      return [];
+      return fallback;
     }
   }
-  async function fetchCategoriasNovas() {
-    try {
-      const res = await fetch("../data/categorias-novas.json", { cache: "no-store" });
-      return res.ok ? await res.json() : [];
-    } catch (e) {
-      return [];
-    }
+  const fetchProdutosNovos = () => fetchJson("../data/produtos-novos.json", []);
+  const fetchCategoriasNovas = () => fetchJson("../data/categorias-novas.json", []);
+  const fetchProdutosOriginais = () => fetchJson("../data/produtos-originais.json", []);
+  const fetchEdits = () => fetchJson("../data/produtos-editados.json", {});
+  const fetchOcultos = () => fetchJson("../data/produtos-ocultos.json", []);
+
+  async function loadCatalogoCompleto() {
+    const [novos, categorias, originais, edits, ocultos] = await Promise.all([
+      fetchProdutosNovos(), fetchCategoriasNovas(), fetchProdutosOriginais(), fetchEdits(), fetchOcultos(),
+    ]);
+    const labelPorId = { ...NEWMED.categorias };
+    (Array.isArray(categorias) ? categorias : []).forEach((c) => (labelPorId[c.id] = c.nome));
+
+    const ocultosList = Array.isArray(ocultos) ? ocultos : [];
+    const editsObj = edits && typeof edits === "object" ? edits : {};
+
+    const originaisList = (Array.isArray(originais) ? originais : []).map((p) => ({
+      ...p,
+      ...(editsObj[p.slug] || {}),
+      tipo: "original",
+      oculto: ocultosList.includes(p.slug),
+    }));
+    const novosList = (Array.isArray(novos) ? novos : []).map((p) => ({ ...p, tipo: "novo" }));
+
+    return { produtos: originaisList.concat(novosList), labelPorId };
   }
 
   async function loadResumo() {
-    const [produtos, categorias] = await Promise.all([fetchProdutosNovos(), fetchCategoriasNovas()]);
-    const novos = Array.isArray(produtos) ? produtos.length : 0;
-    document.getElementById("stat-total").textContent = 147 + novos;
+    const { produtos } = await loadCatalogoCompleto();
+    const visiveis = produtos.filter((p) => !p.oculto);
+    const novos = produtos.filter((p) => p.tipo === "novo").length;
+    document.getElementById("stat-total").textContent = visiveis.length;
     document.getElementById("stat-novos").textContent = novos;
+    const categorias = await fetchCategoriasNovas();
     document.getElementById("stat-categorias").textContent = Array.isArray(categorias) ? categorias.length : 0;
   }
 
   async function loadProdutosList() {
     const wrap = document.getElementById("produtos-lista");
-    const [produtos, categorias] = await Promise.all([fetchProdutosNovos(), fetchCategoriasNovas()]);
-    const labelPorId = { ...NEWMED.categorias };
-    (Array.isArray(categorias) ? categorias : []).forEach((c) => (labelPorId[c.id] = c.nome));
+    const { produtos, labelPorId } = await loadCatalogoCompleto();
 
-    if (!Array.isArray(produtos) || !produtos.length) {
-      wrap.innerHTML = '<p class="lista-vazia">Nenhum produto cadastrado por aqui ainda.</p>';
+    if (!produtos.length) {
+      wrap.innerHTML = '<p class="lista-vazia">Nenhum produto encontrado.</p>';
       return;
     }
 
@@ -362,23 +381,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       const row = document.createElement("div");
       row.className = "produto-row";
       const foto = p.foto ? `../${String(p.foto).replace(/^\//, "")}` : "";
+      const badge = p.tipo === "original" ? "Catálogo" : "Cadastrado por você";
+      const acaoOcultar = p.tipo === "original"
+        ? `<button type="button" data-toggle-hidden>${p.oculto ? "Reexibir" : "Ocultar"}</button>`
+        : `<button type="button" class="danger" data-delete>Excluir</button>`;
       row.innerHTML =
-        `<img class="produto-row-img" src="${foto}" alt="">` +
-        `<div class="produto-row-info"><strong></strong><span></span></div>` +
+        `<img class="produto-row-img" src="${foto}" alt="" style="${p.oculto ? "opacity:.4;" : ""}">` +
+        `<div class="produto-row-info"><strong></strong><span></span><span style="display:block; font-size:.72rem; color:var(--ink-500);">${badge}${p.oculto ? " · oculto" : ""}</span></div>` +
         `<div class="produto-row-actions">` +
         `<button type="button" data-edit>Editar</button>` +
-        `<button type="button" class="danger" data-delete>Excluir</button>` +
+        acaoOcultar +
         `</div>`;
       row.querySelector(".produto-row-info strong").textContent = p.nome;
       row.querySelector(".produto-row-info span").textContent = labelPorId[p.categoria] || p.categoria;
       row.querySelector("[data-edit]").addEventListener("click", () => startEditProduto(p));
-      row.querySelector("[data-delete]").addEventListener("click", () => deleteProduto(p));
+      if (p.tipo === "original") {
+        row.querySelector("[data-toggle-hidden]").addEventListener("click", () => toggleHidden(p));
+      } else {
+        row.querySelector("[data-delete]").addEventListener("click", () => deleteProduto(p));
+      }
       wrap.appendChild(row);
     });
   }
 
   function resetProdutoForm() {
     editingId = null;
+    editingSlug = null;
     document.getElementById("produto-form").reset();
     document.getElementById("btn-salvar-produto").textContent = "Salvar produto";
     document.getElementById("p-foto-hint").hidden = true;
@@ -386,7 +414,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function startEditProduto(p) {
-    editingId = p.id;
+    editingId = p.tipo === "novo" ? p.id : null;
+    editingSlug = p.tipo === "original" ? p.slug : null;
     document.getElementById("p-nome").value = p.nome || "";
     document.getElementById("p-categoria").value = p.categoria || "";
     document.getElementById("p-descricao").value = p.descricao || "";
@@ -401,6 +430,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!confirm(`Remover "${p.nome}" do catálogo?`)) return;
     try {
       await api("delete-product", { id: p.id });
+      loadProdutosList();
+      loadResumo();
+    } catch (e) {
+      if (e.message !== "__unauthorized__") alert(e.message);
+    }
+  }
+
+  async function toggleHidden(p) {
+    const acao = p.oculto ? "reexibir" : "ocultar";
+    if (!confirm(`Quer ${acao} "${p.nome}" no catálogo do site?`)) return;
+    try {
+      await api("set-hidden", { slug: p.slug, hidden: !p.oculto });
       loadProdutosList();
       loadResumo();
     } catch (e) {
@@ -442,7 +483,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         let fotoBase64 = "", fotoNome = "";
         if (file) { fotoBase64 = await fileToBase64(file); fotoNome = file.name; }
 
-        if (editingId) {
+        if (editingSlug) {
+          await api("update-original", { slug: editingSlug, nome, categoria, descricao, fotoBase64, fotoNome });
+        } else if (editingId) {
           await api("update-product", { id: editingId, nome, categoria, descricao, fotoBase64, fotoNome });
         } else {
           await api("add-product", { nome, categoria, descricao, fotoBase64, fotoNome });

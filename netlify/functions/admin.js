@@ -4,6 +4,8 @@ const BRANCH = "main";
 const PRODUCTS_PATH = "data/produtos-novos.json";
 const CATEGORIES_PATH = "data/categorias-novas.json";
 const CONFIG_PATH = "data/config.json";
+const EDITS_PATH = "data/produtos-editados.json";
+const HIDDEN_PATH = "data/produtos-ocultos.json";
 const MEDIA_DIR = "img/produtos-novos";
 
 function slugify(str) {
@@ -105,6 +107,34 @@ async function addCategory({ nome, grupo, icone }) {
   return ok({ id });
 }
 
+async function updateOriginal({ slug, nome, categoria, descricao, fotoBase64, fotoNome }) {
+  if (!slug) throw new Error("Produto não encontrado.");
+  const { data: current, sha } = await readJson(EDITS_PATH);
+  const edits = current || {};
+  const fotoPath = fotoBase64 ? await uploadPhoto(nome || slug, fotoBase64, fotoNome) : undefined;
+  edits[slug] = {
+    ...(edits[slug] || {}),
+    ...(nome !== undefined && nome !== "" ? { nome: nome.trim() } : {}),
+    ...(categoria !== undefined && categoria !== "" ? { categoria } : {}),
+    ...(descricao !== undefined ? { descricao: String(descricao).trim() } : {}),
+    ...(fotoPath ? { foto: fotoPath } : {}),
+  };
+  await writeJson(EDITS_PATH, edits, sha, `Admin: edita produto original "${slug}"`);
+  return ok({});
+}
+
+async function setHidden({ slug, hidden }) {
+  if (!slug) throw new Error("Produto não encontrado.");
+  const { data: current, sha } = await readJson(HIDDEN_PATH);
+  const list = current || [];
+  const has = list.includes(slug);
+  let next = list;
+  if (hidden && !has) next = [...list, slug];
+  if (!hidden && has) next = list.filter((s) => s !== slug);
+  await writeJson(HIDDEN_PATH, next, sha, `Admin: ${hidden ? "oculta" : "reexibe"} produto "${slug}"`);
+  return ok({});
+}
+
 async function saveConfig(body) {
   const { whatsapp, whatsappLabel, defaultMessage, telefone, email, endereco, horario } = body;
   const { data: current, sha } = await readJson(CONFIG_PATH);
@@ -158,6 +188,10 @@ exports.handler = async (event) => {
         return await addCategory(body);
       case "save-config":
         return await saveConfig(body);
+      case "update-original":
+        return await updateOriginal(body);
+      case "set-hidden":
+        return await setHidden(body);
       default:
         return fail(400, "Ação inválida.");
     }
