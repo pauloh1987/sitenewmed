@@ -449,12 +449,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function fileToBase64(file) {
+  // Redimensiona e recomprime a foto no navegador antes de enviar — fotos de
+  // celular costumam vir com vários MB, o que estoura o limite de tamanho de
+  // requisição do servidor. 1600px no lado maior é de sobra pra uma foto de
+  // produto e deixa o site mais rápido pra quem visita depois.
+  function comprimirFoto(file, maxLado = 1600, qualidade = 0.85) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result).split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width > maxLado || height > maxLado) {
+          if (width > height) { height = Math.round((height * maxLado) / width); width = maxLado; }
+          else { width = Math.round((width * maxLado) / height); height = maxLado; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject(new Error("Não foi possível processar essa imagem."));
+            const reader = new FileReader();
+            reader.onload = () =>
+              resolve({
+                base64: String(reader.result).split(",")[1],
+                nome: (file.name || "foto").replace(/\.[^.]+$/, "") + ".jpg",
+              });
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          },
+          "image/jpeg",
+          qualidade
+        );
+      };
+      img.onerror = () => reject(new Error("Não foi possível abrir essa imagem."));
+      img.src = url;
     });
   }
 
@@ -481,7 +512,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const descricao = document.getElementById("p-descricao").value.trim();
         const file = document.getElementById("p-foto").files[0];
         let fotoBase64 = "", fotoNome = "";
-        if (file) { fotoBase64 = await fileToBase64(file); fotoNome = file.name; }
+        if (file) {
+          const comprimida = await comprimirFoto(file);
+          fotoBase64 = comprimida.base64;
+          fotoNome = comprimida.nome;
+        }
 
         if (editingSlug) {
           await api("update-original", { slug: editingSlug, nome, categoria, descricao, fotoBase64, fotoNome });
