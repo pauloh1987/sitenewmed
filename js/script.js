@@ -7,9 +7,40 @@ const NEWMED = {
   whatsappLabel: "(81) 8122-7330",
   defaultMessage: "Olá! Vim pelo site e gostaria de solicitar um orçamento.",
   foundedYear: 2009,
+  // Mesmas categorias/IDs usados nos .cat-block de produtos.html —
+  // reaproveitado pela página produto-dinamico.html (produtos do painel admin).
+  categorias: {
+    "aparelhos-de-pressa-o-digital": "Aparelhos de Pressão Digital",
+    "cardiotoco-grafos": "Cardiotocógrafos",
+    "detectores-fetais": "Detectores Fetais",
+    "eletrocardio-grafos": "Eletrocardiógrafos",
+    "monitor-dopler-vascular": "Monitor Dopler Vascular",
+    "monitores": "Monitores",
+    "sensores-de-oximetria": "Sensores de Oximetria",
+    "tensio-metros-e-estetosco-pios": "Tensiômetros e Estetoscópios",
+    "cardioversores": "Cardioversores",
+    "desfibrilador-externo-automa-tico": "Desfibrilador Externo Automático (DEA)",
+    "desfibriladores": "Desfibriladores",
+    "pa-s-adesivas": "Pás Adesivas",
+    "material-de-resgate-aph": "Material de Resgate — APH",
+    "aspiradores-cirurgicos": "Aspiradores Cirúrgicos",
+    "inaladores-e-nebulizadores": "Inaladores e Nebulizadores",
+    "oxigenac-a-o": "Oxigenação",
+    "baterias": "Baterias",
+    "brac-adeiras": "Braçadeiras",
+    "cabos-de-ecg-05": "Cabos de ECG 05 Vias",
+    "cabos-de-ecg-10-vias": "Cabos de ECG 10 Vias",
+    "conectores-pni": "Conectores PNI",
+    "conjunto-de-peras-e-cardioclips": "Conjunto de Peras e Cardioclips",
+    "papeis-para-eletrocardio-grafo": "Papéis para Eletrocardiógrafo",
+    "papeis-para-ultrassonografia": "Papéis para Ultrassonografia",
+    "balancas": "Balanças",
+    "carrinhos": "Carrinhos",
+  },
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await wireDynamicProducts();
   wireWhatsappLinks();
   wireHeaderScroll();
   wireMobileNav();
@@ -248,6 +279,55 @@ function wireSearchFromQuery() {
     input.value = q;
     input.dispatchEvent(new Event("input"));
   }
+}
+
+// Produtos cadastrados pelo painel admin (data/produtos-novos.json) entram
+// no grid da categoria certa antes de tudo mais rodar, pra busca/filtro já
+// enxergarem esses cards junto com os produtos estáticos.
+async function wireDynamicProducts() {
+  if (!document.querySelector(".cat-block")) return;
+  const prefix = location.pathname.includes("/produto/") ? "../" : "";
+
+  let produtos = [];
+  try {
+    const res = await fetch(`${prefix}data/produtos-novos.json`, { cache: "no-store" });
+    if (res.ok) produtos = await res.json();
+  } catch (e) {
+    return;
+  }
+  if (!Array.isArray(produtos) || !produtos.length) return;
+
+  const escapeHtml = (s) =>
+    String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  produtos.forEach((p, i) => {
+    if (!p || !p.nome || !p.categoria) return;
+    const block = document.querySelector(`.cat-block[id="${p.categoria}"]`);
+    const grid = block?.querySelector(".product-grid");
+    if (!grid) return;
+
+    const nome = escapeHtml(p.nome);
+    const foto = `${prefix}${String(p.foto || "").replace(/^\//, "")}`;
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.setAttribute("data-name", p.nome);
+    card.innerHTML =
+      `<div class="product-card-img"><img src="${foto}" alt="${nome}" loading="lazy"></div>` +
+      `<div class="product-card-body">` +
+      `<h4>${nome}</h4>` +
+      `<div class="product-card-actions">` +
+      `<a href="${prefix}produto-dinamico.html?i=${i}" class="cat-card-link">Ver detalhes <i class="fa-solid fa-arrow-right"></i></a>` +
+      `<a href="#" class="product-card-wa" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento de: ${nome.toUpperCase()}" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>` +
+      `</div></div>`;
+    grid.appendChild(card);
+
+    const countEl = block.querySelector(".cat-block-count");
+    if (countEl) {
+      const current = parseInt(countEl.textContent, 10) || 0;
+      countEl.textContent = `${current + 1} produtos`;
+    }
+  });
 }
 
 // Aviso de cookies simples: aparece uma vez, guarda a escolha no navegador.

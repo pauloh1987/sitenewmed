@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produto — Newmed Equipamentos Hospitalares</title>
+<meta name="description" content="Detalhes do produto — Newmed Equipamentos Hospitalares.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-bar">
+    <a href="index.html" class="brand">
+      <img src="img/logo-newmed.png" alt="Newmed Equipamentos Hospitalares" class="brand-logo">
+    </a>
+
+    <nav class="main-nav">
+      <a href="index.html">Início</a>
+      <a href="sobre.html">Quem Somos</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="servicos.html">Serviços</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="header-search-toggle" aria-label="Buscar produtos" aria-expanded="false"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="tel:+558131282222" class="header-phone"><i class="fa-solid fa-phone"></i> (81) 3128-2222</a>
+      <a href="#" class="btn btn-whatsapp btn-sm" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento."><i class="fa-brands fa-whatsapp"></i> <span class="btn-label">WhatsApp</span></a>
+      <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+  <form class="header-search-panel" id="header-search-form">
+    <div class="header-search-panel-inner">
+      <input type="text" name="q" placeholder="Buscar produtos (ex: balança, ECG, monitor...)" aria-label="Buscar produtos">
+      <button type="submit" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </form>
+</header>
+
+<section class="page-banner" style="padding:32px 0;">
+  <div class="container">
+    <div class="breadcrumb" id="pd-breadcrumb"><a href="index.html">Início</a> / <a href="produtos.html">Produtos</a> / <span>…</span></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:48px;" id="pd-content" hidden>
+  <div class="container product-detail">
+    <div class="product-detail-media" data-reveal>
+      <img id="pd-img" src="" alt="">
+    </div>
+    <div class="product-detail-info" data-reveal>
+      <span class="eyebrow" id="pd-eyebrow"></span>
+      <h1 id="pd-title"></h1>
+      <div class="product-detail-desc">
+        <p id="pd-desc"></p>
+      </div>
+      <div class="product-detail-actions">
+        <a href="#" class="btn btn-whatsapp" id="pd-wa-1" data-wa><i class="fa-brands fa-whatsapp"></i> Solicitar orçamento</a>
+        <a href="contato.html" class="btn btn-ghost">Outras formas de contato</a>
+      </div>
+      <a href="produtos.html" class="product-detail-back" id="pd-back"><i class="fa-solid fa-arrow-left"></i> Voltar para o catálogo</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pd-notfound" hidden>
+  <div class="container" style="text-align:center;">
+    <h2>Produto não encontrado</h2>
+    <p>O produto que você procura não existe ou foi removido.</p>
+    <a href="produtos.html" class="btn btn-primary" style="margin-top:16px;">Ver catálogo completo</a>
+  </div>
+</section>
+
+<section class="section section--alt" id="pd-cta" hidden>
+  <div class="container">
+    <div class="cta-banner" data-reveal>
+      <div>
+        <h2>Precisa de mais informações sobre este produto?</h2>
+        <p>Fale com nosso time e receba condições, prazo de entrega e disponibilidade.</p>
+      </div>
+      <div class="cta-actions">
+        <a href="#" class="btn btn-navy" id="pd-wa-2" data-wa><i class="fa-brands fa-whatsapp"></i> Chamar no WhatsApp</a>
+        <a href="produtos.html" class="btn btn-outline">Ver catálogo completo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="img/logo-newmed.png" alt="Newmed Equipamentos Hospitalares" class="brand-logo">
+        </a>
+        <p data-years-since="2009">Há 17 anos vendendo, alugando e dando manutenção em equipamentos médicos e hospitalares em todo o Brasil.</p>
+        <div class="social-row">
+          <a href="https://www.instagram.com/newmedas2/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" data-wa data-wa-msg="Olá! Gostaria de mais informações." aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="sobre.html">Quem Somos</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="servicos.html">Serviços</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Serviços</h4>
+        <ul>
+          <li><a href="servicos.html#tecnico">Departamento Técnico</a></li>
+          <li><a href="servicos.html#locacao">Locação de Equipamentos</a></li>
+          <li><a href="produtos.html">Catálogo de Produtos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col footer-contact">
+        <h4>Contato</h4>
+        <ul>
+          <li><i class="fa-solid fa-phone"></i> <span>(81) 3128-2222</span></li>
+          <li><i class="fa-solid fa-envelope"></i> <span>comercial@newmedequipamentos.com.br</span></li>
+          <li><i class="fa-solid fa-location-dot"></i> <span>Rua Doutor Manoel de Almeida Belo, 700 — Bairro Novo, Olinda - PE, CEP 53030-030</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Newmed Equipamentos Hospitalares. Todos os direitos reservados.</span>
+      <a href="privacidade.html" style="color:rgba(255,255,255,.5); font-size:.82rem;">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<a href="#" class="wa-float" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." aria-label="Falar no WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+
+<script src="js/script.js"></script>
+<script>
+  (async function () {
+    const i = new URLSearchParams(location.search).get("i");
+    const content = document.getElementById("pd-content");
+    const notfound = document.getElementById("pd-notfound");
+    const cta = document.getElementById("pd-cta");
+
+    function showNotFound() {
+      notfound.hidden = false;
+    }
+
+    if (i === null) return showNotFound();
+
+    let produtos = [];
+    try {
+      const res = await fetch("data/produtos-novos.json", { cache: "no-store" });
+      produtos = res.ok ? await res.json() : [];
+    } catch (e) {
+      return showNotFound();
+    }
+
+    const p = Array.isArray(produtos) ? produtos[Number(i)] : null;
+    if (!p || !p.nome || !p.categoria) return showNotFound();
+
+    const catLabel = (typeof NEWMED !== "undefined" && NEWMED.categorias && NEWMED.categorias[p.categoria]) || "Produtos";
+    const nomeUpper = p.nome.toUpperCase();
+    const waMsg = `Olá! Gostaria de solicitar um orçamento de: ${nomeUpper}`;
+
+    document.title = `${p.nome} — Newmed Equipamentos Hospitalares`;
+
+    document.getElementById("pd-breadcrumb").innerHTML =
+      `<a href="index.html">Início</a> / <a href="produtos.html">Produtos</a> / <a href="produtos.html#${p.categoria}">${catLabel}</a> / <span>${p.nome}</span>`;
+
+    document.getElementById("pd-img").src = String(p.foto || "").replace(/^\//, "");
+    document.getElementById("pd-img").alt = p.nome;
+    document.getElementById("pd-eyebrow").textContent = catLabel;
+    document.getElementById("pd-title").textContent = p.nome;
+    document.getElementById("pd-desc").textContent =
+      p.descricao ||
+      `Peça a ficha técnica completa deste item — nossa equipe confirma disponibilidade, compatibilidade e prazo de entrega para ${catLabel}.`;
+    document.getElementById("pd-back").href = `produtos.html#${p.categoria}`;
+    document.getElementById("pd-back").innerHTML = `<i class="fa-solid fa-arrow-left"></i> Voltar para ${catLabel}`;
+
+    ["pd-wa-1", "pd-wa-2"].forEach((id) => {
+      document.getElementById(id).setAttribute("data-wa-msg", waMsg);
+    });
+
+    content.hidden = false;
+    cta.hidden = false;
+
+    // Os links de WhatsApp foram preenchidos depois que wireWhatsappLinks()
+    // já tinha rodado (o fetch acima é assíncrono) — repete só pra esta seção.
+    document.querySelectorAll("[data-wa]").forEach((el) => {
+      const msg = el.getAttribute("data-wa-msg") || NEWMED.defaultMessage;
+      el.href = `https://wa.me/${NEWMED.whatsapp}?text=${encodeURIComponent(msg)}`;
+      el.setAttribute("target", "_blank");
+      el.setAttribute("rel", "noopener");
+    });
+  })();
+</script>
+</body>
+</html>
