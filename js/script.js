@@ -7,6 +7,10 @@ const NEWMED = {
   whatsappLabel: "(81) 8122-7330",
   defaultMessage: "Olá! Vim pelo site e gostaria de solicitar um orçamento.",
   foundedYear: 2009,
+  telefone: "(81) 3128-2222",
+  email: "comercial@newmedequipamentos.com.br",
+  endereco: "Rua Doutor Manoel de Almeida Belo, 700 — Bairro Novo, Olinda - PE, CEP 53030-030",
+  horario: "08h às 17h",
   // Mesmas categorias/IDs usados nos .cat-block de produtos.html —
   // reaproveitado pela página produto-dinamico.html (produtos do painel admin).
   categorias: {
@@ -40,6 +44,8 @@ const NEWMED = {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+  await loadConfig();
+  wireConfigFields();
   await wireDynamicProducts();
   wireWhatsappLinks();
   wireHeaderScroll();
@@ -55,6 +61,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   wireYearsSince();
   wireCookieBanner();
 });
+
+// "../" quando a página está uma pasta abaixo da raiz (produto/ ou admin/).
+function pagePrefix() {
+  return /\/(produto|admin)\//.test(location.pathname) ? "../" : "";
+}
+
+// Busca data/config.json e sobrescreve os valores padrão do NEWMED acima.
+// Roda antes de tudo mais no DOMContentLoaded — se falhar, os valores
+// padrão (os mesmos que já estavam no código) continuam valendo.
+async function loadConfig() {
+  const prefix = pagePrefix();
+  try {
+    const res = await fetch(`${prefix}data/config.json`, { cache: "no-store" });
+    if (res.ok) Object.assign(NEWMED, await res.json());
+  } catch (e) {}
+}
+
+// Preenche [data-config="campo"] com o valor de NEWMED[campo], e monta os
+// links de telefone/e-mail em [data-config-href-tel]/[data-config-href-mail].
+function wireConfigFields() {
+  document.querySelectorAll("[data-config]").forEach((el) => {
+    const key = el.getAttribute("data-config");
+    if (NEWMED[key] !== undefined) el.textContent = NEWMED[key];
+  });
+  document.querySelectorAll("[data-config-href-tel]").forEach((el) => {
+    el.href = `tel:+55${NEWMED.telefone.replace(/\D/g, "")}`;
+  });
+  document.querySelectorAll("[data-config-href-mail]").forEach((el) => {
+    el.href = `mailto:${NEWMED.email}`;
+  });
+}
 
 // Preenche todo link com [data-wa] usando o número central acima.
 // Aceita data-wa-msg para uma mensagem específica daquele botão.
@@ -214,7 +251,7 @@ function wireContactForm() {
       `Categoria de interesse: ${categoria}\n\n` +
       `Mensagem:\n${mensagem}`;
 
-    window.location.href = `mailto:comercial@newmedequipamentos.com.br?subject=${encodeURIComponent(
+    window.location.href = `mailto:${NEWMED.email}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
   });
@@ -265,7 +302,7 @@ function wireHeaderSearch() {
     e.preventDefault();
     const q = input.value.trim();
     if (!q) return;
-    const base = location.pathname.includes("/produto/") ? "../produtos.html" : "produtos.html";
+    const base = `${pagePrefix()}produtos.html`;
     window.location.href = `${base}?q=${encodeURIComponent(q)}`;
   });
 }
@@ -281,28 +318,67 @@ function wireSearchFromQuery() {
   }
 }
 
+const escapeHtml = (s) =>
+  String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// Cria o bloco .cat-block de uma categoria nova (criada pelo painel admin)
+// dentro do .cat-group certo, do mesmo jeito que os 26 originais — só entra
+// em ação se a categoria ainda não existir na página.
+function ensureCategoryBlock(cat) {
+  let block = document.querySelector(`.cat-block[id="${cat.id}"]`);
+  if (block) return block;
+
+  const group = document.querySelector(`.cat-group[data-group="${cat.grupo}"]`);
+  if (!group) return null;
+
+  block = document.createElement("div");
+  block.className = "cat-block";
+  block.id = cat.id;
+  block.setAttribute("data-name", cat.nome);
+  block.innerHTML =
+    `<div class="cat-block-head">` +
+    `<div class="cat-block-icon"><i class="${cat.icone || "fa-solid fa-box"}"></i></div>` +
+    `<h3>${escapeHtml(cat.nome)}</h3>` +
+    `<span class="cat-block-count">0 produtos</span>` +
+    `</div>` +
+    `<div class="product-grid"></div>`;
+  group.appendChild(block);
+  return block;
+}
+
 // Produtos cadastrados pelo painel admin (data/produtos-novos.json) entram
 // no grid da categoria certa antes de tudo mais rodar, pra busca/filtro já
-// enxergarem esses cards junto com os produtos estáticos.
+// enxergarem esses cards junto com os produtos estáticos. Categorias novas
+// (data/categorias-novas.json) são criadas na hora, se ainda não existirem.
 async function wireDynamicProducts() {
   if (!document.querySelector(".cat-block")) return;
-  const prefix = location.pathname.includes("/produto/") ? "../" : "";
+  const prefix = pagePrefix();
 
   let produtos = [];
+  let categorias = [];
   try {
-    const res = await fetch(`${prefix}data/produtos-novos.json`, { cache: "no-store" });
-    if (res.ok) produtos = await res.json();
+    const [resP, resC] = await Promise.all([
+      fetch(`${prefix}data/produtos-novos.json`, { cache: "no-store" }),
+      fetch(`${prefix}data/categorias-novas.json`, { cache: "no-store" }),
+    ]);
+    if (resP.ok) produtos = await resP.json();
+    if (resC.ok) categorias = await resC.json();
   } catch (e) {
     return;
   }
   if (!Array.isArray(produtos) || !produtos.length) return;
 
-  const escapeHtml = (s) =>
-    String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const categoriasPorId = {};
+  (Array.isArray(categorias) ? categorias : []).forEach((c) => {
+    if (c && c.id) categoriasPorId[c.id] = c;
+  });
 
   produtos.forEach((p, i) => {
     if (!p || !p.nome || !p.categoria) return;
-    const block = document.querySelector(`.cat-block[id="${p.categoria}"]`);
+    let block = document.querySelector(`.cat-block[id="${p.categoria}"]`);
+    if (!block && categoriasPorId[p.categoria]) {
+      block = ensureCategoryBlock(categoriasPorId[p.categoria]);
+    }
     const grid = block?.querySelector(".product-grid");
     if (!grid) return;
 
@@ -317,7 +393,7 @@ async function wireDynamicProducts() {
       `<div class="product-card-body">` +
       `<h4>${nome}</h4>` +
       `<div class="product-card-actions">` +
-      `<a href="${prefix}produto-dinamico.html?i=${i}" class="cat-card-link">Ver detalhes <i class="fa-solid fa-arrow-right"></i></a>` +
+      `<a href="${prefix}produto-dinamico.html?id=${encodeURIComponent(p.id || i)}" class="cat-card-link">Ver detalhes <i class="fa-solid fa-arrow-right"></i></a>` +
       `<a href="#" class="product-card-wa" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento de: ${nome.toUpperCase()}" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>` +
       `</div></div>`;
     grid.appendChild(card);
@@ -338,7 +414,7 @@ function wireCookieBanner() {
   } catch (e) {}
   if (alreadyAccepted) return;
 
-  const prefix = location.pathname.includes("/produto/") ? "../" : "";
+  const prefix = pagePrefix();
   const banner = document.createElement("div");
   banner.className = "cookie-banner";
   banner.innerHTML =

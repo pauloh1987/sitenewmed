@@ -9,87 +9,250 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
 <style>
-  body { background: var(--bg-alt); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-  .admin-card { background: var(--white); border-radius: var(--radius-lg); padding: 40px; max-width: 460px; width: 100%; box-shadow: var(--shadow-lg); }
+  body { background: var(--bg-alt); min-height: 100vh; padding: 24px; }
+  .admin-shell { max-width: 640px; margin: 0 auto; }
+  .admin-card { background: var(--white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); }
+  #login-view .admin-card { max-width: 420px; margin: 48px auto 0; }
   .admin-card .brand-logo { height: 40px; margin-bottom: 24px; }
   .admin-card h1 { font-size: 1.3rem; margin-bottom: 6px; }
-  .admin-card > div > p { color: var(--ink-500); margin-bottom: 22px; font-size: .92rem; }
+  .admin-card > p.intro { color: var(--ink-500); margin-bottom: 22px; font-size: .92rem; }
   .admin-msg { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: .88rem; }
   .admin-msg.ok { background: #DCFCE7; color: #166534; }
   .admin-msg.err { background: #FEE2E2; color: #991B1B; }
   [hidden] { display: none !important; }
+
+  .admin-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .admin-topbar .brand-logo { height: 34px; margin-bottom: 0; }
+  .admin-logout { background: none; border: none; color: var(--ink-500); font-size: .82rem; font-weight: 600; cursor: pointer; }
+  .admin-logout:hover { color: var(--navy-900); }
+
+  .admin-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 24px; overflow-x: auto; }
+  .admin-tab { padding: 10px 14px; border: none; background: none; font-family: inherit; font-weight: 700; font-size: .86rem; color: var(--ink-500); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+  .admin-tab.is-active { color: var(--teal-600); border-bottom-color: var(--teal-500); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px; }
+  .stat-tile { background: var(--bg-alt); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+  .stat-tile strong { display: block; font-family: var(--font-heading); font-size: 1.6rem; color: var(--navy-900); }
+  .stat-tile span { font-size: .78rem; color: var(--ink-500); }
+
+  .produto-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .produto-row-img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; background: var(--bg-alt); flex-shrink: 0; }
+  .produto-row-info { flex-grow: 1; min-width: 0; }
+  .produto-row-info strong { display: block; font-size: .92rem; color: var(--navy-900); }
+  .produto-row-info span { font-size: .78rem; color: var(--ink-500); }
+  .produto-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .produto-row-actions button { border: 1px solid var(--line); background: var(--white); border-radius: 8px; padding: 6px 10px; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--ink-700); }
+  .produto-row-actions button:hover { background: var(--bg-alt); }
+  .produto-row-actions button.danger { color: #991B1B; border-color: #FBC8CE; }
+  .produto-row-actions button.danger:hover { background: #FEE2E2; }
+  .lista-vazia { color: var(--ink-500); font-size: .88rem; padding: 12px 0; }
+
+  #produto-form-wrap { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 </style>
 </head>
 <body>
 
-<div class="admin-card">
-  <img src="../img/logo-newmed.png" alt="Newmed" class="brand-logo">
+<div class="admin-shell">
 
   <div id="login-view">
-    <h1>Painel Admin</h1>
-    <p>Digite a senha de administrador para continuar.</p>
-    <div class="field">
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" autocomplete="current-password">
+    <div class="admin-card">
+      <img src="../img/logo-newmed.png" alt="Newmed" class="brand-logo">
+      <h1>Painel Admin</h1>
+      <p class="intro">Digite a senha de administrador para continuar.</p>
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" autocomplete="current-password">
+      </div>
+      <button type="button" class="btn btn-primary btn-block" id="btn-entrar">Entrar</button>
+      <div class="admin-msg err" id="login-msg" hidden></div>
     </div>
-    <button type="button" class="btn btn-primary btn-block" id="btn-entrar">Entrar</button>
-    <div class="admin-msg err" id="login-msg" hidden></div>
   </div>
 
-  <div id="form-view" hidden>
-    <h1>Adicionar produto</h1>
-    <p>Preencha os dados abaixo — eles aparecem no catálogo do site.</p>
-    <form id="produto-form">
-      <div class="field">
-        <label for="nome">Nome do produto</label>
-        <input type="text" id="nome" required>
+  <div id="app-view" hidden>
+    <div class="admin-topbar">
+      <img src="../img/logo-newmed.png" alt="Newmed" class="brand-logo">
+      <button type="button" class="admin-logout" id="btn-sair">Sair</button>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab is-active" data-tab="resumo">Resumo</button>
+        <button type="button" class="admin-tab" data-tab="produtos">Produtos</button>
+        <button type="button" class="admin-tab" data-tab="categoria">Nova categoria</button>
+        <button type="button" class="admin-tab" data-tab="contato">Contato</button>
       </div>
-      <div class="field">
-        <label for="categoria">Categoria</label>
-        <select id="categoria" required>
-          <option value="">Selecione…</option>
-        </select>
+
+      <!-- ===== Resumo ===== -->
+      <div class="admin-panel" data-panel="resumo">
+        <div class="stat-grid">
+          <div class="stat-tile"><strong id="stat-total">—</strong><span>produtos no catálogo</span></div>
+          <div class="stat-tile"><strong id="stat-novos">—</strong><span>cadastrados por aqui</span></div>
+          <div class="stat-tile"><strong id="stat-categorias">—</strong><span>categorias criadas</span></div>
+        </div>
+        <p class="intro" style="margin-top:18px; margin-bottom:0;">Use as abas acima pra cadastrar produto, criar categoria nova ou trocar telefone/e-mail/endereço do site.</p>
       </div>
-      <div class="field">
-        <label for="foto">Foto</label>
-        <input type="file" id="foto" accept="image/*">
+
+      <!-- ===== Produtos ===== -->
+      <div class="admin-panel" data-panel="produtos" hidden>
+        <button type="button" class="btn btn-primary" id="btn-novo-produto">+ Adicionar produto</button>
+
+        <div id="produto-form-wrap" hidden>
+          <form id="produto-form">
+            <div class="field">
+              <label for="p-nome">Nome do produto</label>
+              <input type="text" id="p-nome" required>
+            </div>
+            <div class="field">
+              <label for="p-categoria">Categoria</label>
+              <select id="p-categoria" required>
+                <option value="">Selecione…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="p-foto">Foto <span id="p-foto-hint" style="font-weight:400; color:var(--ink-500);" hidden>(deixe em branco pra manter a atual)</span></label>
+              <input type="file" id="p-foto" accept="image/*">
+            </div>
+            <div class="field">
+              <label for="p-descricao">Descrição (opcional)</label>
+              <textarea id="p-descricao" rows="4"></textarea>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="submit" class="btn btn-primary" id="btn-salvar-produto">Salvar produto</button>
+              <button type="button" class="btn btn-ghost" id="btn-cancelar-produto">Cancelar</button>
+            </div>
+          </form>
+          <div class="admin-msg" id="produto-msg" hidden></div>
+        </div>
+
+        <div id="produtos-lista" style="margin-top:20px;"></div>
       </div>
-      <div class="field">
-        <label for="descricao">Descrição (opcional)</label>
-        <textarea id="descricao" rows="4"></textarea>
+
+      <!-- ===== Nova categoria ===== -->
+      <div class="admin-panel" data-panel="categoria" hidden>
+        <p class="intro">Cria uma categoria nova dentro de um dos grupos que já existem em Produtos.</p>
+        <form id="categoria-form">
+          <div class="field">
+            <label for="c-nome">Nome da categoria</label>
+            <input type="text" id="c-nome" required>
+          </div>
+          <div class="field">
+            <label for="c-grupo">Grupo</label>
+            <select id="c-grupo" required>
+              <option value="">Selecione…</option>
+              <option value="diagnostico">Diagnóstico e Monitoramento</option>
+              <option value="emergencia">Emergência e Cardiologia</option>
+              <option value="respiratoria">Terapia Respiratória</option>
+              <option value="acessorios">Acessórios e Consumíveis</option>
+              <option value="mobiliario">Mobiliário Hospitalar</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="c-icone">Ícone</label>
+            <select id="c-icone">
+              <option value="fa-solid fa-box">Geral</option>
+              <option value="fa-solid fa-kit-medical">Kit médico</option>
+              <option value="fa-solid fa-syringe">Seringa / injeção</option>
+              <option value="fa-solid fa-heart-pulse">Cardiologia</option>
+              <option value="fa-solid fa-lungs">Respiratório</option>
+              <option value="fa-solid fa-bed-pulse">Monitoramento hospitalar</option>
+              <option value="fa-solid fa-wheelchair">Mobilidade</option>
+              <option value="fa-solid fa-briefcase-medical">Maleta médica</option>
+              <option value="fa-solid fa-stethoscope">Estetoscópio</option>
+              <option value="fa-solid fa-vial">Laboratorial</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Criar categoria</button>
+        </form>
+        <div class="admin-msg" id="categoria-msg" hidden></div>
       </div>
-      <button type="submit" class="btn btn-primary btn-block" id="btn-salvar">Salvar produto</button>
-    </form>
-    <div class="admin-msg" id="form-msg" hidden></div>
+
+      <!-- ===== Contato ===== -->
+      <div class="admin-panel" data-panel="contato" hidden>
+        <p class="intro">Esses dados aparecem em todas as páginas do site (cabeçalho, rodapé e página de Contato).</p>
+        <form id="contato-form">
+          <div class="field">
+            <label for="cf-telefone">Telefone</label>
+            <input type="text" id="cf-telefone">
+          </div>
+          <div class="field">
+            <label for="cf-email">E-mail</label>
+            <input type="email" id="cf-email">
+          </div>
+          <div class="field">
+            <label for="cf-endereco">Endereço</label>
+            <input type="text" id="cf-endereco">
+          </div>
+          <div class="field">
+            <label for="cf-horario">Horário de atendimento</label>
+            <input type="text" id="cf-horario">
+          </div>
+          <div class="field">
+            <label for="cf-whatsapp">Número do WhatsApp (só números, com DDI+DDD — ex: 5581999999999)</label>
+            <input type="text" id="cf-whatsapp">
+          </div>
+          <div class="field">
+            <label for="cf-whatsapp-label">WhatsApp (como aparece escrito no site)</label>
+            <input type="text" id="cf-whatsapp-label">
+          </div>
+          <div class="field">
+            <label for="cf-mensagem">Mensagem padrão do botão de orçamento</label>
+            <textarea id="cf-mensagem" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Salvar dados de contato</button>
+        </form>
+        <div class="admin-msg" id="contato-msg" hidden></div>
+      </div>
+    </div>
   </div>
+
 </div>
 
 <script src="../js/script.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const FN_URL = "/.netlify/functions/add-product";
+document.addEventListener("DOMContentLoaded", async () => {
+  const FN_URL = "/.netlify/functions/admin";
   let senhaAtual = "";
+  let editingId = null;
 
   const loginView = document.getElementById("login-view");
-  const formView = document.getElementById("form-view");
+  const appView = document.getElementById("app-view");
   const loginMsg = document.getElementById("login-msg");
-  const formMsg = document.getElementById("form-msg");
-  const categoriaSelect = document.getElementById("categoria");
 
-  Object.entries(NEWMED.categorias).forEach(([id, label]) => {
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = label;
-    categoriaSelect.appendChild(opt);
-  });
+  async function api(action, payload) {
+    const res = await fetch(FN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: senhaAtual, action, ...payload }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      try { sessionStorage.removeItem("newmed-admin-pw"); } catch (e) {}
+      appView.hidden = true;
+      loginView.hidden = false;
+      loginMsg.textContent = "Senha incorreta. Tente novamente.";
+      loginMsg.hidden = false;
+      throw new Error("__unauthorized__");
+    }
+    if (!res.ok) throw new Error(data.error || "Erro inesperado.");
+    return data;
+  }
+
+  function showMsg(el, text, ok) {
+    el.className = "admin-msg " + (ok ? "ok" : "err");
+    el.textContent = text;
+    el.hidden = false;
+  }
+
+  // ---------- Login ----------
+  function entrarComoLogado() {
+    loginView.hidden = true;
+    appView.hidden = false;
+    initApp();
+  }
 
   try {
     const saved = sessionStorage.getItem("newmed-admin-pw");
-    if (saved) {
-      senhaAtual = saved;
-      loginView.hidden = true;
-      formView.hidden = false;
-    }
+    if (saved) { senhaAtual = saved; entrarComoLogado(); }
   } catch (e) {}
 
   function entrar() {
@@ -98,13 +261,152 @@ document.addEventListener("DOMContentLoaded", () => {
     senhaAtual = v;
     try { sessionStorage.setItem("newmed-admin-pw", v); } catch (e) {}
     loginMsg.hidden = true;
-    loginView.hidden = true;
-    formView.hidden = false;
+    entrarComoLogado();
   }
   document.getElementById("btn-entrar").addEventListener("click", entrar);
   document.getElementById("senha").addEventListener("keydown", (e) => {
     if (e.key === "Enter") entrar();
   });
+  document.getElementById("btn-sair").addEventListener("click", () => {
+    try { sessionStorage.removeItem("newmed-admin-pw"); } catch (e) {}
+    location.reload();
+  });
+
+  // ---------- App (roda só depois do login) ----------
+  let appInitialized = false;
+  function initApp() {
+    if (appInitialized) return;
+    appInitialized = true;
+    initTabs();
+    populateCategoriaSelect();
+    loadResumo();
+    loadProdutosList();
+    wireProdutoForm();
+    wireCategoriaForm();
+    wireContatoForm();
+  }
+
+  function initTabs() {
+    document.querySelectorAll(".admin-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".admin-tab").forEach((t) => t.classList.remove("is-active"));
+        document.querySelectorAll(".admin-panel").forEach((p) => (p.hidden = true));
+        tab.classList.add("is-active");
+        document.querySelector(`.admin-panel[data-panel="${tab.dataset.tab}"]`).hidden = false;
+        if (tab.dataset.tab === "contato") loadContato();
+        if (tab.dataset.tab === "produtos") loadProdutosList();
+        if (tab.dataset.tab === "resumo") loadResumo();
+      });
+    });
+  }
+
+  async function getCategoriasCombinadas() {
+    let novas = [];
+    try {
+      const res = await fetch("../data/categorias-novas.json", { cache: "no-store" });
+      if (res.ok) novas = await res.json();
+    } catch (e) {}
+    const base = Object.entries(NEWMED.categorias || {}).map(([id, nome]) => ({ id, nome }));
+    return base.concat(Array.isArray(novas) ? novas.map((c) => ({ id: c.id, nome: c.nome })) : []);
+  }
+
+  async function populateCategoriaSelect() {
+    const sel = document.getElementById("p-categoria");
+    const categorias = await getCategoriasCombinadas();
+    categorias.forEach(({ id, nome }) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function fetchProdutosNovos() {
+    try {
+      const res = await fetch("../data/produtos-novos.json", { cache: "no-store" });
+      return res.ok ? await res.json() : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  async function fetchCategoriasNovas() {
+    try {
+      const res = await fetch("../data/categorias-novas.json", { cache: "no-store" });
+      return res.ok ? await res.json() : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function loadResumo() {
+    const [produtos, categorias] = await Promise.all([fetchProdutosNovos(), fetchCategoriasNovas()]);
+    const novos = Array.isArray(produtos) ? produtos.length : 0;
+    document.getElementById("stat-total").textContent = 147 + novos;
+    document.getElementById("stat-novos").textContent = novos;
+    document.getElementById("stat-categorias").textContent = Array.isArray(categorias) ? categorias.length : 0;
+  }
+
+  async function loadProdutosList() {
+    const wrap = document.getElementById("produtos-lista");
+    const [produtos, categorias] = await Promise.all([fetchProdutosNovos(), fetchCategoriasNovas()]);
+    const labelPorId = { ...NEWMED.categorias };
+    (Array.isArray(categorias) ? categorias : []).forEach((c) => (labelPorId[c.id] = c.nome));
+
+    if (!Array.isArray(produtos) || !produtos.length) {
+      wrap.innerHTML = '<p class="lista-vazia">Nenhum produto cadastrado por aqui ainda.</p>';
+      return;
+    }
+
+    wrap.innerHTML = "";
+    produtos.forEach((p) => {
+      const row = document.createElement("div");
+      row.className = "produto-row";
+      const foto = p.foto ? `../${String(p.foto).replace(/^\//, "")}` : "";
+      row.innerHTML =
+        `<img class="produto-row-img" src="${foto}" alt="">` +
+        `<div class="produto-row-info"><strong></strong><span></span></div>` +
+        `<div class="produto-row-actions">` +
+        `<button type="button" data-edit>Editar</button>` +
+        `<button type="button" class="danger" data-delete>Excluir</button>` +
+        `</div>`;
+      row.querySelector(".produto-row-info strong").textContent = p.nome;
+      row.querySelector(".produto-row-info span").textContent = labelPorId[p.categoria] || p.categoria;
+      row.querySelector("[data-edit]").addEventListener("click", () => startEditProduto(p));
+      row.querySelector("[data-delete]").addEventListener("click", () => deleteProduto(p));
+      wrap.appendChild(row);
+    });
+  }
+
+  function resetProdutoForm() {
+    editingId = null;
+    document.getElementById("produto-form").reset();
+    document.getElementById("btn-salvar-produto").textContent = "Salvar produto";
+    document.getElementById("p-foto-hint").hidden = true;
+    document.getElementById("produto-form-wrap").hidden = true;
+  }
+
+  function startEditProduto(p) {
+    editingId = p.id;
+    document.getElementById("p-nome").value = p.nome || "";
+    document.getElementById("p-categoria").value = p.categoria || "";
+    document.getElementById("p-descricao").value = p.descricao || "";
+    document.getElementById("p-foto").value = "";
+    document.getElementById("p-foto-hint").hidden = false;
+    document.getElementById("btn-salvar-produto").textContent = "Salvar edição";
+    document.getElementById("produto-form-wrap").hidden = false;
+    document.getElementById("produto-form-wrap").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function deleteProduto(p) {
+    if (!confirm(`Remover "${p.nome}" do catálogo?`)) return;
+    try {
+      await api("delete-product", { id: p.id });
+      loadProdutosList();
+      loadResumo();
+    } catch (e) {
+      if (e.message !== "__unauthorized__") alert(e.message);
+    }
+  }
 
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -115,56 +417,111 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  document.getElementById("produto-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById("btn-salvar");
-    formMsg.hidden = true;
-    btn.disabled = true;
-    btn.textContent = "Salvando…";
+  function wireProdutoForm() {
+    document.getElementById("btn-novo-produto").addEventListener("click", () => {
+      resetProdutoForm();
+      document.getElementById("produto-form-wrap").hidden = false;
+      document.getElementById("p-nome").focus();
+    });
+    document.getElementById("btn-cancelar-produto").addEventListener("click", resetProdutoForm);
 
+    document.getElementById("produto-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-salvar-produto");
+      const msg = document.getElementById("produto-msg");
+      msg.hidden = true;
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = "Salvando…";
+
+      try {
+        const nome = document.getElementById("p-nome").value.trim();
+        const categoria = document.getElementById("p-categoria").value;
+        const descricao = document.getElementById("p-descricao").value.trim();
+        const file = document.getElementById("p-foto").files[0];
+        let fotoBase64 = "", fotoNome = "";
+        if (file) { fotoBase64 = await fileToBase64(file); fotoNome = file.name; }
+
+        if (editingId) {
+          await api("update-product", { id: editingId, nome, categoria, descricao, fotoBase64, fotoNome });
+        } else {
+          await api("add-product", { nome, categoria, descricao, fotoBase64, fotoNome });
+        }
+
+        resetProdutoForm();
+        showMsg(msg, "Produto salvo! Aparece no site em 1-2 minutos.", true);
+        loadProdutosList();
+        loadResumo();
+      } catch (err) {
+        if (err.message !== "__unauthorized__") { btn.textContent = original; showMsg(msg, err.message, false); }
+      } finally {
+        btn.disabled = false;
+        if (btn.textContent === "Salvando…") btn.textContent = original;
+      }
+    });
+  }
+
+  function wireCategoriaForm() {
+    document.getElementById("categoria-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("categoria-msg");
+      msg.hidden = true;
+      try {
+        const nome = document.getElementById("c-nome").value.trim();
+        const grupo = document.getElementById("c-grupo").value;
+        const icone = document.getElementById("c-icone").value;
+        await api("add-category", { nome, grupo, icone });
+        document.getElementById("categoria-form").reset();
+        showMsg(msg, "Categoria criada! Já aparece pra escolher ao cadastrar produto.", true);
+        const sel = document.getElementById("p-categoria");
+        sel.innerHTML = '<option value="">Selecione…</option>';
+        (await getCategoriasCombinadas()).forEach(({ id, nome }) => {
+          const opt = document.createElement("option");
+          opt.value = id; opt.textContent = nome;
+          sel.appendChild(opt);
+        });
+        loadResumo();
+      } catch (err) {
+        if (err.message !== "__unauthorized__") showMsg(msg, err.message, false);
+      }
+    });
+  }
+
+  async function loadContato() {
     try {
-      const nome = document.getElementById("nome").value.trim();
-      const categoria = categoriaSelect.value;
-      const descricao = document.getElementById("descricao").value.trim();
-      const file = document.getElementById("foto").files[0];
+      const res = await fetch("../data/config.json", { cache: "no-store" });
+      const cfg = res.ok ? await res.json() : {};
+      document.getElementById("cf-telefone").value = cfg.telefone || NEWMED.telefone || "";
+      document.getElementById("cf-email").value = cfg.email || NEWMED.email || "";
+      document.getElementById("cf-endereco").value = cfg.endereco || NEWMED.endereco || "";
+      document.getElementById("cf-horario").value = cfg.horario || NEWMED.horario || "";
+      document.getElementById("cf-whatsapp").value = cfg.whatsapp || NEWMED.whatsapp || "";
+      document.getElementById("cf-whatsapp-label").value = cfg.whatsappLabel || NEWMED.whatsappLabel || "";
+      document.getElementById("cf-mensagem").value = cfg.defaultMessage || NEWMED.defaultMessage || "";
+    } catch (e) {}
+  }
 
-      let fotoBase64 = "";
-      let fotoNome = "";
-      if (file) {
-        fotoBase64 = await fileToBase64(file);
-        fotoNome = file.name;
+  function wireContatoForm() {
+    document.getElementById("contato-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("contato-msg");
+      msg.hidden = true;
+      try {
+        await api("save-config", {
+          telefone: document.getElementById("cf-telefone").value.trim(),
+          email: document.getElementById("cf-email").value.trim(),
+          endereco: document.getElementById("cf-endereco").value.trim(),
+          horario: document.getElementById("cf-horario").value.trim(),
+          whatsapp: document.getElementById("cf-whatsapp").value.trim(),
+          whatsappLabel: document.getElementById("cf-whatsapp-label").value.trim(),
+          defaultMessage: document.getElementById("cf-mensagem").value.trim(),
+        });
+        showMsg(msg, "Dados de contato atualizados! Valem no site em 1-2 minutos.", true);
+      } catch (err) {
+        if (err.message !== "__unauthorized__") showMsg(msg, err.message, false);
       }
-
-      const res = await fetch(FN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: senhaAtual, nome, categoria, descricao, fotoBase64, fotoNome }),
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (res.status === 401) {
-        try { sessionStorage.removeItem("newmed-admin-pw"); } catch (e2) {}
-        formView.hidden = true;
-        loginView.hidden = false;
-        loginMsg.textContent = "Senha incorreta. Tente novamente.";
-        loginMsg.hidden = false;
-        return;
-      }
-      if (!res.ok) throw new Error(data.error || "Erro ao salvar.");
-
-      formMsg.className = "admin-msg ok";
-      formMsg.textContent = "Produto salvo! Ele aparece no site em 1-2 minutos.";
-      formMsg.hidden = false;
-      document.getElementById("produto-form").reset();
-    } catch (err) {
-      formMsg.className = "admin-msg err";
-      formMsg.textContent = err.message || "Erro ao salvar. Tente novamente.";
-      formMsg.hidden = false;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Salvar produto";
-    }
-  });
+    });
+  }
 });
 </script>
 </body>
