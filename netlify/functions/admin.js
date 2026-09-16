@@ -170,6 +170,10 @@ exports.handler = async (event) => {
   }
 
   if (!process.env.ADMIN_PASSWORD || body.password !== process.env.ADMIN_PASSWORD) {
+    // Atraso proposital: sem isso, alguém poderia tentar milhares de senhas
+    // por minuto. 1.5s por tentativa errada não incomoda um humano, mas
+    // torna força bruta impraticável.
+    await new Promise((r) => setTimeout(r, 1500));
     return fail(401, "Senha incorreta.");
   }
   if (!process.env.GITHUB_TOKEN) {

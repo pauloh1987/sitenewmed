@@ -103,8 +103,10 @@
 
     <div class="contact-form-card" data-reveal>
       <h3>Solicitar orçamento</h3>
-      <p>Preencha o formulário abaixo — vamos abrir um e-mail já preenchido para o nosso time comercial.</p>
-      <form id="contact-form">
+      <p>Preencha o formulário abaixo — sua mensagem chega direto para o nosso time comercial.</p>
+      <form id="contact-form" name="contato" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contato">
+        <p class="hidden-field"><label>Não preencha isto: <input name="bot-field"></label></p>
         <div class="form-row">
           <div class="field">
             <label for="nome">Nome</label>
@@ -137,7 +139,8 @@
           <textarea id="mensagem" name="mensagem" required placeholder="Conte o que você precisa: equipamento, quantidade, prazo..."></textarea>
         </div>
         <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Enviar mensagem</button>
-        <p class="form-note">Ao enviar, seu app de e-mail vai abrir com a mensagem pronta para comercial@newmedequipamentos.com.br. Prefere WhatsApp? <a href="#" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." style="color:var(--teal-600); font-weight:700;">Clique aqui</a>.</p>
+        <p class="form-note" id="contact-form-note">Sua mensagem vai direto para comercial@newmedequipamentos.com.br. Prefere WhatsApp? <a href="#" data-wa data-wa-msg="Olá! Gostaria de solicitar um orçamento." style="color:var(--teal-700); font-weight:700;">Clique aqui</a>.</p>
+        <div class="form-msg" id="contact-form-msg" hidden></div>
       </form>
     </div>
 

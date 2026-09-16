@@ -5,7 +5,7 @@
 const NEWMED = {
   whatsapp: "558181227330",
   whatsappLabel: "(81) 8122-7330",
-  defaultMessage: "Olá! Vim pelo site e gostaria de solicitar um orçamento.",
+  defaultMessage: "Olá, vim pelo site e gostaria de um orçamento.",
   foundedYear: 2009,
   telefone: "(81) 3128-2222",
   email: "comercial@newmedequipamentos.com.br",
@@ -231,30 +231,49 @@ function wireCategoryFilter() {
   applyFilters();
 }
 
-// Sem backend: monta um e-mail pré-preenchido com os dados do formulário.
+// Envia o formulário de contato pelo Netlify Forms (sem precisar de backend
+// próprio) — o Netlify detecta o form no HTML publicado e entrega por e-mail
+// pra quem for configurado em Site configuration → Forms → Notifications.
 function wireContactForm() {
   const form = document.querySelector("#contact-form");
   if (!form) return;
+  const msg = document.querySelector("#contact-form-msg");
+  const note = document.querySelector("#contact-form-note");
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const data = new FormData(form);
-    const nome = data.get("nome") || "";
-    const email = data.get("email") || "";
-    const telefone = data.get("telefone") || "";
-    const categoria = data.get("categoria") || "";
-    const mensagem = data.get("mensagem") || "";
+    const btn = form.querySelector('button[type="submit"]');
+    const btnHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = "Enviando…";
+    if (msg) msg.hidden = true;
 
-    const subject = `Contato pelo site — ${nome}`;
-    const body =
-      `Nome: ${nome}\n` +
-      `E-mail: ${email}\n` +
-      `Telefone: ${telefone}\n` +
-      `Categoria de interesse: ${categoria}\n\n` +
-      `Mensagem:\n${mensagem}`;
-
-    window.location.href = `mailto:${NEWMED.email}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(new FormData(form)).toString(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Falha no envio");
+        form.reset();
+        if (note) note.hidden = true;
+        if (msg) {
+          msg.className = "form-msg ok";
+          msg.textContent = "Mensagem enviada! Nosso time entra em contato em breve.";
+          msg.hidden = false;
+        }
+      })
+      .catch(() => {
+        if (msg) {
+          msg.className = "form-msg err";
+          msg.textContent = "Não conseguimos enviar agora — tente de novo ou fale pelo WhatsApp abaixo.";
+          msg.hidden = false;
+        }
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = btnHtml;
+      });
   });
 }
 
