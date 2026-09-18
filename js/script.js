@@ -475,7 +475,7 @@ async function wireOriginalOverride() {
 
   // Página individual do produto (produto/<slug>.html): aplica a edição no
   // próprio conteúdo se esta for a página editada.
-  const slugAtual = location.pathname.match(/\/produto\/([^/]+)\.html$/)?.[1];
+  const slugAtual = location.pathname.match(/\/produto\/([^/]+?)(?:\.html)?$/)?.[1];
   const edit = slugAtual && edits[slugAtual];
   if (edit) {
     if (edit.nome) {
