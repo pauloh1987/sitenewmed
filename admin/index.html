@@ -110,6 +110,7 @@
             </div>
             <div class="field">
               <label for="p-foto">Foto <span id="p-foto-hint" style="font-weight:400; color:var(--ink-500);" hidden>(deixe em branco pra manter a atual)</span></label>
+              <img id="p-foto-preview" alt="Foto atual" hidden style="display:block; width:96px; height:96px; object-fit:cover; border-radius:10px; border:1px solid var(--line); margin-bottom:10px; background:var(--bg-alt);">
               <input type="file" id="p-foto" accept="image/*">
             </div>
             <div class="field">
@@ -410,6 +411,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("produto-form").reset();
     document.getElementById("btn-salvar-produto").textContent = "Salvar produto";
     document.getElementById("p-foto-hint").hidden = true;
+    document.getElementById("p-foto-preview").hidden = true;
+    document.getElementById("p-foto-preview").src = "";
     document.getElementById("produto-form-wrap").hidden = true;
   }
 
@@ -421,6 +424,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("p-descricao").value = p.descricao || "";
     document.getElementById("p-foto").value = "";
     document.getElementById("p-foto-hint").hidden = false;
+    const preview = document.getElementById("p-foto-preview");
+    if (p.foto) {
+      preview.src = "../" + String(p.foto).replace(/^\//, "");
+      preview.hidden = false;
+    } else {
+      preview.hidden = true;
+    }
     document.getElementById("btn-salvar-produto").textContent = "Salvar edição";
     document.getElementById("produto-form-wrap").hidden = false;
     document.getElementById("produto-form-wrap").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -496,6 +506,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("p-nome").focus();
     });
     document.getElementById("btn-cancelar-produto").addEventListener("click", resetProdutoForm);
+
+    document.getElementById("p-foto").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      const preview = document.getElementById("p-foto-preview");
+      if (!file) return;
+      preview.src = URL.createObjectURL(file);
+      preview.hidden = false;
+    });
 
     document.getElementById("produto-form").addEventListener("submit", async (e) => {
       e.preventDefault();
