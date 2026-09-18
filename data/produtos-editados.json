@@ -1,1 +1,7 @@
-{}
+{
+  "balanca-antropometrica-digital": {
+    "nome": "Balança Antropométrica Digital",
+    "categoria": "balancas",
+    "descricao": "Teste"
+  }
+}
