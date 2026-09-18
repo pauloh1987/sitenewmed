@@ -7,6 +7,7 @@
 <title>Painel Admin — Newmed</title>
 <link rel="icon" type="image/png" href="../img/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="../css/style.css">
 <style>
   body { background: var(--bg-alt); min-height: 100vh; padding: 24px; }
@@ -41,13 +42,48 @@
   .produto-row-info strong { display: block; font-size: .92rem; color: var(--navy-900); }
   .produto-row-info span { font-size: .78rem; color: var(--ink-500); }
   .produto-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
-  .produto-row-actions button { border: 1px solid var(--line); background: var(--white); border-radius: 8px; padding: 6px 10px; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--ink-700); }
+  .produto-row-actions button { border: 1px solid var(--line); background: var(--white); border-radius: 8px; padding: 6px 10px; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--ink-700); transition: background .15s ease, border-color .15s ease; }
   .produto-row-actions button:hover { background: var(--bg-alt); }
   .produto-row-actions button.danger { color: #991B1B; border-color: #FBC8CE; }
   .produto-row-actions button.danger:hover { background: #FEE2E2; }
-  .lista-vazia { color: var(--ink-500); font-size: .88rem; padding: 12px 0; }
+  .lista-vazia { color: var(--ink-500); font-size: .88rem; padding: 20px 0; text-align: center; }
 
-  #produto-form-wrap { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  /* ---- Busca/filtro da lista de produtos ---- */
+  .produto-filtros { display: flex; gap: 10px; margin: 22px 0 6px; }
+  .produto-busca-wrap { position: relative; flex-grow: 1; }
+  .produto-busca-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--ink-500); font-size: .82rem; pointer-events: none; }
+  .produto-busca-wrap input { width: 100%; padding: 11px 14px 11px 38px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-alt); font-size: .88rem; transition: border-color .15s ease, background .15s ease; }
+  .produto-busca-wrap input:focus { border-color: var(--teal-500); background: var(--white); outline: none; }
+  #produto-filtro-categoria { width: 200px; flex-shrink: 0; padding: 11px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-alt); font-size: .84rem; color: var(--ink-700); transition: border-color .15s ease, background .15s ease; }
+  #produto-filtro-categoria:focus { border-color: var(--teal-500); background: var(--white); outline: none; }
+  @media (max-width: 480px) { .produto-filtros { flex-direction: column; } #produto-filtro-categoria { width: 100%; } }
+
+  /* ---- Card do formulário de produto ---- */
+  .produto-form-card { background: var(--bg-alt); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; margin: 18px 0 26px; box-shadow: var(--shadow-sm); }
+  .produto-form-title { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: var(--navy-900); margin: 0 0 20px; }
+  .produto-form-card .field { margin-bottom: 20px; }
+  .produto-form-card .field:last-of-type { margin-bottom: 0; }
+  .produto-form-card .field label { display: flex; align-items: center; gap: 7px; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 800; color: var(--ink-700); margin-bottom: 9px; }
+  .produto-form-card .field label i { color: var(--teal-600); font-size: .95em; }
+  .produto-form-card .field input,
+  .produto-form-card .field select,
+  .produto-form-card .field textarea { transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+  .produto-form-card .field input:focus,
+  .produto-form-card .field select:focus,
+  .produto-form-card .field textarea:focus { border-color: var(--teal-500); box-shadow: 0 0 0 3px rgba(20,184,166,.15); background: var(--white); outline: none; }
+
+  .photo-drop { position: relative; border: 2px dashed var(--line); border-radius: var(--radius-sm); background: var(--white); min-height: 132px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .15s ease, background .15s ease; overflow: hidden; }
+  .photo-drop:hover, .photo-drop.is-dragover { border-color: var(--teal-500); background: rgba(20,184,166,.06); }
+  .photo-drop img#p-foto-preview { width: 100%; height: 132px; object-fit: cover; display: block; }
+  .photo-drop-empty { text-align: center; padding: 22px 16px; color: var(--ink-500); font-size: .85rem; line-height: 1.5; }
+  .photo-drop-empty i { display: block; font-size: 1.7rem; color: var(--teal-500); margin-bottom: 8px; }
+  .photo-drop-empty span { color: var(--teal-600); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+  .photo-drop-clear { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; background: rgba(11,32,54,.72); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: .78rem; transition: background .15s ease; }
+  .photo-drop-clear:hover { background: rgba(11,32,54,.9); }
+
+  .produto-form-actions { display: flex; align-items: center; gap: 18px; margin-top: 26px; }
+  .btn-cancel-link { background: none; border: none; padding: 0; color: var(--ink-500); font-weight: 600; font-size: .88rem; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; transition: color .15s ease; }
+  .btn-cancel-link:hover { color: var(--navy-900); }
 </style>
 </head>
 <body>
@@ -96,36 +132,54 @@
       <div class="admin-panel" data-panel="produtos" hidden>
         <button type="button" class="btn btn-primary" id="btn-novo-produto">+ Adicionar produto</button>
 
-        <div id="produto-form-wrap" hidden>
+        <div id="produto-form-wrap" class="produto-form-card" hidden>
+          <h3 class="produto-form-title" id="produto-form-title">Adicionar produto</h3>
           <form id="produto-form">
             <div class="field">
-              <label for="p-nome">Nome do produto</label>
+              <label for="p-nome"><i class="fa-solid fa-box"></i> Nome do produto</label>
               <input type="text" id="p-nome" required>
             </div>
             <div class="field">
-              <label for="p-categoria">Categoria</label>
+              <label for="p-categoria"><i class="fa-solid fa-tags"></i> Categoria</label>
               <select id="p-categoria" required>
                 <option value="">Selecione…</option>
               </select>
             </div>
             <div class="field">
-              <label for="p-foto">Foto <span id="p-foto-hint" style="font-weight:400; color:var(--ink-500);" hidden>(deixe em branco pra manter a atual)</span></label>
-              <img id="p-foto-preview" alt="Foto atual" hidden style="display:block; width:96px; height:96px; object-fit:cover; border-radius:10px; border:1px solid var(--line); margin-bottom:10px; background:var(--bg-alt);">
-              <input type="file" id="p-foto" accept="image/*">
+              <label for="p-foto"><i class="fa-solid fa-image"></i> Foto <span id="p-foto-hint" style="font-weight:400; text-transform:none; letter-spacing:normal; color:var(--ink-500);" hidden>(deixe em branco pra manter a atual)</span></label>
+              <div class="photo-drop" id="p-foto-drop">
+                <img id="p-foto-preview" alt="" hidden>
+                <div class="photo-drop-empty" id="p-foto-drop-empty">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <p>Arraste uma foto aqui ou <span>clique para escolher</span></p>
+                </div>
+                <button type="button" class="photo-drop-clear" id="p-foto-clear" hidden aria-label="Remover foto selecionada"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <input type="file" id="p-foto" accept="image/*" style="display:none;">
             </div>
             <div class="field">
-              <label for="p-descricao">Descrição (opcional)</label>
+              <label for="p-descricao"><i class="fa-solid fa-align-left"></i> Descrição (opcional)</label>
               <textarea id="p-descricao" rows="4"></textarea>
             </div>
-            <div style="display:flex; gap:10px;">
+            <div class="produto-form-actions">
               <button type="submit" class="btn btn-primary" id="btn-salvar-produto">Salvar produto</button>
-              <button type="button" class="btn btn-ghost" id="btn-cancelar-produto">Cancelar</button>
+              <button type="button" class="btn-cancel-link" id="btn-cancelar-produto">Cancelar</button>
             </div>
           </form>
           <div class="admin-msg" id="produto-msg" hidden></div>
         </div>
 
-        <div id="produtos-lista" style="margin-top:20px;"></div>
+        <div class="produto-filtros">
+          <div class="produto-busca-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="produto-busca" placeholder="Buscar por nome…">
+          </div>
+          <select id="produto-filtro-categoria">
+            <option value="">Todas as categorias</option>
+          </select>
+        </div>
+
+        <div id="produtos-lista" style="margin-top:8px;"></div>
       </div>
 
       <!-- ===== Nova categoria ===== -->
@@ -284,6 +338,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadResumo();
     loadProdutosList();
     wireProdutoForm();
+    wirePhotoDropzone();
+    wireProdutoFiltros();
     wireCategoriaForm();
     wireContatoForm();
   }
@@ -368,9 +424,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("stat-categorias").textContent = Array.isArray(categorias) ? categorias.length : 0;
   }
 
+  let produtosCache = [];
+  let labelPorIdCache = {};
+
   async function loadProdutosList() {
-    const wrap = document.getElementById("produtos-lista");
     const { produtos, labelPorId } = await loadCatalogoCompleto();
+    produtosCache = produtos;
+    labelPorIdCache = labelPorId;
+    populateCategoriaFiltro(labelPorId);
+    applyProdutoFiltros();
+  }
+
+  function populateCategoriaFiltro(labelPorId) {
+    const sel = document.getElementById("produto-filtro-categoria");
+    const valorAtual = sel.value;
+    sel.innerHTML = '<option value="">Todas as categorias</option>';
+    Object.entries(labelPorId).forEach(([id, nome]) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+    sel.value = valorAtual;
+  }
+
+  function applyProdutoFiltros() {
+    const termo = document.getElementById("produto-busca").value.trim().toLowerCase();
+    const categoria = document.getElementById("produto-filtro-categoria").value;
+    const filtrados = produtosCache.filter((p) => {
+      const matchNome = !termo || (p.nome || "").toLowerCase().includes(termo);
+      const matchCategoria = !categoria || p.categoria === categoria;
+      return matchNome && matchCategoria;
+    });
+    renderProdutosList(filtrados, labelPorIdCache);
+  }
+
+  function wireProdutoFiltros() {
+    document.getElementById("produto-busca").addEventListener("input", applyProdutoFiltros);
+    document.getElementById("produto-filtro-categoria").addEventListener("change", applyProdutoFiltros);
+  }
+
+  function renderProdutosList(produtos, labelPorId) {
+    const wrap = document.getElementById("produtos-lista");
 
     if (!produtos.length) {
       wrap.innerHTML = '<p class="lista-vazia">Nenhum produto encontrado.</p>';
@@ -405,14 +500,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  let originalFotoUrl = null;
+
+  function setFotoPreview(url) {
+    const preview = document.getElementById("p-foto-preview");
+    const empty = document.getElementById("p-foto-drop-empty");
+    const clearBtn = document.getElementById("p-foto-clear");
+    if (url) {
+      preview.src = url;
+      preview.hidden = false;
+      empty.hidden = true;
+    } else {
+      preview.hidden = true;
+      preview.src = "";
+      empty.hidden = false;
+    }
+    clearBtn.hidden = true;
+  }
+
   function resetProdutoForm() {
     editingId = null;
     editingSlug = null;
+    originalFotoUrl = null;
     document.getElementById("produto-form").reset();
     document.getElementById("btn-salvar-produto").textContent = "Salvar produto";
+    document.getElementById("produto-form-title").textContent = "Adicionar produto";
     document.getElementById("p-foto-hint").hidden = true;
-    document.getElementById("p-foto-preview").hidden = true;
-    document.getElementById("p-foto-preview").src = "";
+    setFotoPreview(null);
     document.getElementById("produto-form-wrap").hidden = true;
   }
 
@@ -424,14 +538,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("p-descricao").value = p.descricao || "";
     document.getElementById("p-foto").value = "";
     document.getElementById("p-foto-hint").hidden = false;
-    const preview = document.getElementById("p-foto-preview");
-    if (p.foto) {
-      preview.src = "../" + String(p.foto).replace(/^\//, "");
-      preview.hidden = false;
-    } else {
-      preview.hidden = true;
-    }
+    originalFotoUrl = p.foto ? "../" + String(p.foto).replace(/^\//, "") : null;
+    setFotoPreview(originalFotoUrl);
     document.getElementById("btn-salvar-produto").textContent = "Salvar edição";
+    document.getElementById("produto-form-title").textContent = "Editar produto";
     document.getElementById("produto-form-wrap").hidden = false;
     document.getElementById("produto-form-wrap").scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -499,6 +609,53 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  function wirePhotoDropzone() {
+    const drop = document.getElementById("p-foto-drop");
+    const input = document.getElementById("p-foto");
+    const clearBtn = document.getElementById("p-foto-clear");
+
+    function showNewFile(file) {
+      if (!file) return;
+      const preview = document.getElementById("p-foto-preview");
+      const empty = document.getElementById("p-foto-drop-empty");
+      preview.src = URL.createObjectURL(file);
+      preview.hidden = false;
+      empty.hidden = true;
+      clearBtn.hidden = false;
+    }
+
+    drop.addEventListener("click", (e) => {
+      if (clearBtn.contains(e.target)) return;
+      input.click();
+    });
+    input.addEventListener("change", () => showNewFile(input.files[0]));
+
+    ["dragenter", "dragover"].forEach((evt) =>
+      drop.addEventListener(evt, (e) => {
+        e.preventDefault();
+        drop.classList.add("is-dragover");
+      })
+    );
+    ["dragleave", "drop"].forEach((evt) =>
+      drop.addEventListener(evt, (e) => {
+        e.preventDefault();
+        drop.classList.remove("is-dragover");
+      })
+    );
+    drop.addEventListener("drop", (e) => {
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      input.files = e.dataTransfer.files;
+      showNewFile(file);
+    });
+
+    clearBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      input.value = "";
+      setFotoPreview(originalFotoUrl);
+    });
+  }
+
   function wireProdutoForm() {
     document.getElementById("btn-novo-produto").addEventListener("click", () => {
       resetProdutoForm();
@@ -506,14 +663,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("p-nome").focus();
     });
     document.getElementById("btn-cancelar-produto").addEventListener("click", resetProdutoForm);
-
-    document.getElementById("p-foto").addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      const preview = document.getElementById("p-foto-preview");
-      if (!file) return;
-      preview.src = URL.createObjectURL(file);
-      preview.hidden = false;
-    });
 
     document.getElementById("produto-form").addEventListener("submit", async (e) => {
       e.preventDefault();
